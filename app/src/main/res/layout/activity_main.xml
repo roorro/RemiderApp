@@ -40,7 +40,7 @@
         android:id="@+id/btnAdd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add notification"
+        android:text="Add reminder"
         android:textColor="#616161"
         android:textSize="18sp"
         android:textStyle="bold"
