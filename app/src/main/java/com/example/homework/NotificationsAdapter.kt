@@ -17,9 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class NotificationsAdapter(context: Context, private val list: ArrayList<Reminder>) : RecyclerView.Adapter<NotificationsAdapter.MyViewHolder>() {
-
-    val context = context
+class NotificationsAdapter(val context: Context, private val list: ArrayList<Reminder>) : RecyclerView.Adapter<NotificationsAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
@@ -33,7 +31,6 @@ class NotificationsAdapter(context: Context, private val list: ArrayList<Reminde
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val reminder: Reminder = list[position]
         holder.setData(reminder, position)
-
     }
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {

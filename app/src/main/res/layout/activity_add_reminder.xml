@@ -35,36 +35,34 @@
         android:id="@+id/btnReminder"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginTop="64dp"
-        android:text="ADD REMINDER"
+        android:layout_marginTop="50dp"
         android:backgroundTint="@android:color/black"
+        android:text="ADD REMINDER"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSetTime" />
+        app:layout_constraintTop_toBottomOf="@+id/cbNotification" />
 
     <Button
         android:id="@+id/btnSetTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
         android:text="set time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSetTime" />
+        app:layout_constraintTop_toBottomOf="@+id/etMessage" />
 
-    <TextView
-        android:id="@+id/tvSetTime"
-        android:layout_width="120dp"
+    <CheckBox
+        android:id="@+id/cbNotification"
+        android:layout_width="180dp"
         android:layout_height="30dp"
-        android:layout_marginTop="60dp"
-        android:text="Time"
-        android:textSize="20dp"
-        android:textAlignment="center"
+        android:layout_marginTop="40dp"
+        android:text="Create Notification"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etMessage" />
+        app:layout_constraintTop_toBottomOf="@+id/btnSetTime" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
