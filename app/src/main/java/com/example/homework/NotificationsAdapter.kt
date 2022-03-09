@@ -1,10 +1,12 @@
 package com.example.homework
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -64,14 +68,12 @@ class NotificationsAdapter(val context: Context, private val list: ArrayList<Rem
                 val view: View = inflater.inflate(R.layout.update_reminder, null)
 
                 val updMsg: TextView = view.findViewById(R.id.etMessage)
-                val updTime: TextView = view.findViewById(R.id.tvSetTime)
                 val buttonSetTime: Button = view.findViewById(R.id.btnSetTime)
-                val timeText: TextView = view.findViewById(R.id.tvSetTime)
 
-                buttonSetTime.setOnClickListener { updAlarm(timeText) }
+                buttonSetTime.setOnClickListener { updAlarm(buttonSetTime) }
 
                 updMsg.text = reminder.message
-                updTime.text = reminder.reminder_time
+                buttonSetTime.text = reminder.reminder_time
 
                 val builder: AlertDialog.Builder = AlertDialog.Builder(context)
                     .setTitle("Update reminder")
@@ -80,10 +82,10 @@ class NotificationsAdapter(val context: Context, private val list: ArrayList<Rem
                         val isUpdate : Boolean = MainActivity.dbHandler.updateReminder(
                             reminder.creator_id.toString(),
                             updMsg.text.toString(),
-                            updTime.text.toString())
+                            buttonSetTime.text.toString())
                         if (isUpdate) {
                             list[position].message = updMsg.text.toString()
-                            list[position].reminder_time = updTime.text.toString()
+                            list[position].reminder_time = buttonSetTime.text.toString()
                             notifyDataSetChanged()
                             Toast.makeText(context, "Updated succesfully", Toast.LENGTH_SHORT).show()
                         }
@@ -113,7 +115,7 @@ class NotificationsAdapter(val context: Context, private val list: ArrayList<Rem
             time.text = reminder.reminder_time
         }
 
-        fun updAlarm(text: TextView) {
+        fun updAlarm(text: Button) {
             Calendar.getInstance().apply {
 
                 DatePickerDialog(
@@ -155,5 +157,4 @@ class NotificationsAdapter(val context: Context, private val list: ArrayList<Rem
     /*interface OnItemClickListener {
         fun onItemClick(position: Int)
     }*/
-
 }

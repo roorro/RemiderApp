@@ -6,13 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".ProfileActivity">
 
-    <TextView
-        android:id="@+id/textView"
+
+    <EditText
+        android:id="@+id/etProfRadius"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is gonna be the profile page"
+        android:ems="10"
+        android:inputType="number"
+        android:hint="Radius"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnRefresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Refresh"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etProfRadius" />
 </androidx.constraintlayout.widget.ConstraintLayout>

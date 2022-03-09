@@ -14,6 +14,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class AddReminderActivity : AppCompatActivity() {
+    private val myIntent = Intent()
+    private lateinit var buttonSetLocation: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_reminder)
@@ -21,23 +24,29 @@ class AddReminderActivity : AppCompatActivity() {
         val title: EditText = findViewById(R.id.etMessage)
         val buttonAdd: Button = findViewById(R.id.btnReminder)
         val buttonSetTime: Button = findViewById(R.id.btnSetTime)
+        buttonSetLocation = findViewById(R.id.btnSetLocation)
 
         val checkbox: CheckBox = findViewById(R.id.cbNotification)
 
         val posIntent: Intent = intent
 
-        val myIntent = Intent()
-
         val position: Int = posIntent.getIntExtra("position", 0)
 
         buttonSetTime.setOnClickListener{
-            setAlarm(buttonSetTime, myIntent)
+            setAlarm(buttonSetTime)
+        }
+
+        buttonSetLocation.setOnClickListener {
+            startActivityForResult(Intent(applicationContext, MapsActivity::class.java), 2)
         }
 
         buttonAdd.setOnClickListener{
 
             val message: String = title.text.toString()
-            val clock: String = buttonSetTime.text.toString()
+            var clock: String = buttonSetTime.text.toString()
+            if (clock == "set time") {
+                clock = "no time"
+            }
 
             myIntent.putExtra("keymessage", message)
             myIntent.putExtra("keytime", clock)
@@ -56,7 +65,7 @@ class AddReminderActivity : AppCompatActivity() {
         }
     }
 
-    private fun setAlarm(text: Button, intent: Intent) {
+    private fun setAlarm(text: Button) {
         Calendar.getInstance().apply {
 
             DatePickerDialog(
@@ -88,7 +97,7 @@ class AddReminderActivity : AppCompatActivity() {
                                 timeDifference = 0
                             }
 
-                            intent.putExtra("difference", timeDifference)
+                            myIntent.putExtra("difference", timeDifference)
 
                             val myTime: String = formatter.format(this.time)
 
@@ -108,4 +117,29 @@ class AddReminderActivity : AppCompatActivity() {
             ).show()
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 2) {
+            if (resultCode == Activity.RESULT_OK) {
+                val latitude = data?.getDoubleExtra("latitude", 0.0)
+                val longitude = data?.getDoubleExtra("longitude", 0.0)
+
+                myIntent.putExtra("latitude", latitude)
+                myIntent.putExtra("longitude", longitude)
+
+                buttonSetLocation.setText(String.format(
+                    Locale.getDefault(),
+                    "Lat %1.2f, Lng: %2.2f",
+                    latitude,
+                    longitude
+                ))
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(applicationContext, "Setting location canceled!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 }

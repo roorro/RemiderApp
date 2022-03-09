@@ -5,13 +5,14 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.location.Location
 import android.util.Log
 import android.widget.Toast
 
 class ReminderDBHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private const val DATABASE_NAME = "MyReminder9.db"
+        private const val DATABASE_NAME = "MyReminder17.db"
         private const val DATABASE_VERSION = 1
         private const val KEY_ID = "_id"
 
@@ -20,6 +21,8 @@ class ReminderDBHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         private const val COLUMN_TIME = "time"
         private const val COLUMN_TIMESTAMP = "timestamp"
         private const val COLUMN_VISIBILITY = "visibility"
+        private const val COLUMN_LONGITUDE = "longitude"
+        private const val COLUMN_LATITUDE = "latitude"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -28,7 +31,9 @@ class ReminderDBHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                 COLUMN_MESSAGE + " TEXT, " +
                 COLUMN_TIME + " TEXT, " +
                 COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
-                COLUMN_VISIBILITY + " INTEGER DEFAULT 0" +
+                COLUMN_VISIBILITY + " INTEGER DEFAULT 0, " +
+                COLUMN_LATITUDE + " DECIMAL DEFAULT 0.0, " +
+                COLUMN_LONGITUDE + " DECIMAL DEFAULT 0.0" +
                 ")")
         db?.execSQL(CREATE_REMINDERS_TABLE)
     }
@@ -39,15 +44,17 @@ class ReminderDBHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_N
     }
 
     fun newReminder(context: Context, reminder: Reminder): Long {
-        val row: Long = 0
+        var row: Long = 0
         val cv = ContentValues()
         cv.put(COLUMN_MESSAGE, reminder.message)
         cv.put(COLUMN_TIME, reminder.reminder_time)
+        cv.put(COLUMN_LATITUDE, reminder.location_y)
+        cv.put(COLUMN_LONGITUDE, reminder.location_x)
         //val query = "Select * From $TABLE_NAME"
         val db: SQLiteDatabase = this.writableDatabase
         //val cursor: Cursor = db.rawQuery(query, null)
         try {
-            val row = db.insert(TABLE_NAME, null, cv)
+            row = db.insert(TABLE_NAME, null, cv)
             Log.d("rivi", "$row")
             Toast.makeText(context, "Reminder Added", Toast.LENGTH_SHORT).show()
             return row
@@ -58,7 +65,7 @@ class ReminderDBHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         return row
     }
 
-    fun getReminders(context: Context, showAll: Boolean) : ArrayList<Reminder> {
+    fun getReminders(context: Context, showAll: Boolean, curLatitude: Double, curLongitude: Double, myRadius: Int) : ArrayList<Reminder> {
         val query = "Select * From $TABLE_NAME"
         val db: SQLiteDatabase = this.readableDatabase
         val cursor: Cursor = db.rawQuery(query, null)
@@ -68,11 +75,23 @@ class ReminderDBHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_N
             Toast.makeText(context, "No Records Found", Toast.LENGTH_SHORT).show()}
         else {
             while (cursor.moveToNext()) {
-                val reminder = Reminder("", "", "", "", "", 0, false)
                 val visible = cursor.getInt(cursor.getColumnIndex(COLUMN_VISIBILITY))
                 if ((visible == 0) and !showAll) {
                     continue
                 }
+                val latitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LATITUDE))
+                val longitude = cursor.getDouble(cursor.getColumnIndex(COLUMN_LONGITUDE))
+                val results = FloatArray(1)
+
+                Location.distanceBetween(curLatitude, curLongitude, latitude, longitude, results)
+                if ((latitude == 0.0) and (longitude == 0.0)) {
+                    //do nothing
+                }
+                else if ((results[0] > myRadius) and !showAll) {
+                    continue
+                }
+
+                val reminder = Reminder("", 0.0, 0.0, "", "", 0, false)
                 reminder.creator_id = cursor.getInt(cursor.getColumnIndex(KEY_ID))
                 reminder.message = cursor.getString(cursor.getColumnIndex(COLUMN_MESSAGE))
                 reminder.reminder_time = cursor.getString(cursor.getColumnIndex(COLUMN_TIME))
